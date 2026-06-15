@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenFlow // Habit & Productivity Analytics</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="styles.css?v=5">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i data-lucide="activity"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">ZenFlow</span>
+                    <span class="logo-subtitle">Analytics Dashboard</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="overview">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </button>
+                <button class="nav-item" data-tab="analytics">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Analytics</span>
+                </button>
+                <button class="nav-item" data-tab="focus">
+                    <i data-lucide="timer"></i>
+                    <span>Focus Room</span>
+                </button>
+                <button class="nav-item" data-tab="calendar">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendar</span>
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <i data-lucide="settings"></i>
+                    <span>Data & Settings</span>
+                </button>
+            </nav>
+
+            <div class="user-level-widget">
+                <div class="level-header">
+                    <span class="level-title" id="user-level-text">Level 1: Novice</span>
+                    <i data-lucide="award" class="level-icon"></i>
+                </div>
+                <div class="exp-bar-bg">
+                    <div class="exp-bar-fill" id="user-exp-fill" style="width: 0%"></div>
+                </div>
+                <span class="exp-text" id="user-exp-text">0 / 100 EXP</span>
+            </div>
+
+            <!-- Streak Freeze Widget -->
+            <div class="freeze-widget" id="freeze-widget">
+                <div class="freeze-header">
+                    <i data-lucide="snowflake"></i>
+                    <span>Streak Freezes</span>
+                    <span class="freeze-count" id="freeze-count">0</span>
+                </div>
+                <button class="btn btn-freeze" id="btn-use-freeze" title="Protect today's streaks">
+                    <i data-lucide="shield"></i>
+                    <span>Use Freeze Today</span>
+                </button>
+                <p class="freeze-hint">Complete all habits to earn a freeze token.</p>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="date-widget">
+                    <div id="current-date">Monday, June 15</div>
+                    <div id="current-time">17:30</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-greeting">
+                    <h1 id="greeting-title">Elevate Your Day</h1>
+                    <p class="header-subtitle">Welcome back. Track your metrics, cultivate your flow.</p>
+                </div>
+                <div class="header-stats">
+                    <div class="mini-stat-card">
+                        <span class="stat-label">Daily Completion</span>
+                        <div class="stat-value-row">
+                            <span class="stat-value" id="daily-completion-pct">0%</span>
+                            <span class="stat-trend neutral"><i data-lucide="check-circle-2"></i></span>
+                        </div>
+                    </div>
+                    <div class="mini-stat-card">
+                        <span class="stat-label">Active Streak</span>
+                        <div class="stat-value-row">
+                            <span class="stat-value" id="longest-streak-val">0 days</span>
+                            <span class="stat-trend positive"><i data-lucide="flame"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Tab View: Overview -->
+            <section id="tab-overview" class="tab-panel active">
+                <div class="dashboard-grid">
+                    <!-- Left: Habits Checklist & Quick Logger -->
+                    <div class="grid-col-left">
+                        <!-- Daily Habits Check-in -->
+                        <div class="glass-card habit-section">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <i data-lucide="check-square" class="card-icon cyan"></i>
+                                    <h2>Daily Habits Check-In</h2>
+                                </div>
+                                <span class="card-badge" id="habit-count-badge">0/5 Done</span>
+                            </div>
+                            <div class="habit-list" id="habits-container">
+                                <!-- Dynamic Habit Items will be injected here -->
+                            </div>
+                            <div class="add-habit-inline">
+                                <input type="text" id="new-habit-name" placeholder="Create a new habit..." maxlength="25">
+                                <button id="add-habit-btn" class="btn btn-primary-icon">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                            </div>
+                            <div class="schedule-picker" id="schedule-picker">
+                                <span class="schedule-label">Schedule (optional):</span>
+                                <div class="day-pills">
+                                    <button type="button" class="day-pill" data-day="0">S</button>
+                                    <button type="button" class="day-pill" data-day="1">M</button>
+                                    <button type="button" class="day-pill" data-day="2">T</button>
+                                    <button type="button" class="day-pill" data-day="3">W</button>
+                                    <button type="button" class="day-pill" data-day="4">T</button>
+                                    <button type="button" class="day-pill" data-day="5">F</button>
+                                    <button type="button" class="day-pill" data-day="6">S</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wellness Daily Logger -->
+                        <div class="glass-card wellness-logger">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <i data-lucide="heart" class="card-icon rose"></i>
+                                    <h2>Log Daily Metrics</h2>
+                                </div>
+                                <span class="card-sub-label">For correlation analysis</span>
+                            </div>
+                            <form id="wellness-form" class="logger-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="sleep-hours">Sleep Duration</label>
+                                        <div class="range-input-wrapper">
+                                            <input type="range" id="sleep-hours" name="sleep" min="0" max="16" step="0.5" value="7.5">
+                                            <span class="range-val" id="sleep-val">7.5 hrs</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="screen-hours">Screen Time</label>
+                                        <div class="range-input-wrapper">
+                                            <input type="range" id="screen-hours" name="screen" min="0" max="18" step="0.5" value="4.0">
+                                            <span class="range-val" id="screen-val">4.0 hrs</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label>Current Mood / Energy</label>
+                                        <div class="mood-selector">
+                                            <input type="radio" name="mood" id="mood-1" value="1">
+                                            <label for="mood-1" class="mood-option" title="Exhausted / Low">
+                                                <span class="mood-emoji">😫</span>
+                                                <span class="mood-text">Low</span>
+                                            </label>
+
+                                            <input type="radio" name="mood" id="mood-2" value="2">
+                                            <label for="mood-2" class="mood-option" title="Tired / Off">
+                                                <span class="mood-emoji">😔</span>
+                                                <span class="mood-text">Tired</span>
+                                            </label>
+
+                                            <input type="radio" name="mood" id="mood-3" value="3" checked>
+                                            <label for="mood-3" class="mood-option" title="Neutral / Balanced">
+                                                <span class="mood-emoji">😐</span>
+                                                <span class="mood-text">Neutral</span>
+                                            </label>
+
+                                            <input type="radio" name="mood" id="mood-4" value="4">
+                                            <label for="mood-4" class="mood-option" title="Good / Focused">
+                                                <span class="mood-emoji">🙂</span>
+                                                <span class="mood-text">Good</span>
+                                            </label>
+
+                                            <input type="radio" name="mood" id="mood-5" value="5">
+                                            <label for="mood-5" class="mood-option" title="Energized / Flow">
+                                                <span class="mood-emoji">🚀</span>
+                                                <span class="mood-text">Flow</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="productivity-score">Productivity Rating</label>
+                                        <div class="star-rating">
+                                            <input type="radio" name="productivity" id="prod-5" value="5"><label for="prod-5" title="Excellent flow">★</label>
+                                            <input type="radio" name="productivity" id="prod-4" value="4" checked><label for="prod-4" title="Good">★</label>
+                                            <input type="radio" name="productivity" id="prod-3" value="3"><label for="prod-3" title="Average">★</label>
+                                            <input type="radio" name="productivity" id="prod-2" value="2"><label for="prod-2" title="Low">★</label>
+                                            <input type="radio" name="productivity" id="prod-1" value="1"><label for="prod-1" title="Very unproductive">★</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-gradient full-width">Save Log Entry</button>
+                            </form>
+                        </div>
+
+                        <!-- Daily Journal -->
+                        <div class="glass-card journal-card">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <i data-lucide="pen-line" class="card-icon gold"></i>
+                                    <h2>Daily Journal</h2>
+                                </div>
+                                <span class="journal-date-label" id="journal-date-label"></span>
+                            </div>
+                            <div class="journal-form">
+                                <div class="journal-field">
+                                    <label for="journal-text">Reflections & Notes</label>
+                                    <textarea id="journal-text" placeholder="How was your day? What did you learn?" rows="3" maxlength="500"></textarea>
+                                    <span class="char-counter" id="journal-char-count">0/500</span>
+                                </div>
+                                <div class="journal-field">
+                                    <label for="gratitude-text">✨ Today I'm grateful for...</label>
+                                    <textarea id="gratitude-text" placeholder="Name one thing you're grateful for today." rows="2" maxlength="200"></textarea>
+                                </div>
+                                <button type="button" class="btn btn-gradient full-width" id="btn-save-journal">
+                                    <i data-lucide="save"></i> Save Journal Entry
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: AI Insights & Quick Progress overview -->
+                    <div class="grid-col-right">
+                        <!-- Progress Rings Card -->
+                        <div class="glass-card stats-summary-card">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <i data-lucide="pie-chart" class="card-icon purple"></i>
+                                    <h2>Weekly Habit Breakdown</h2>
+                                </div>
+                            </div>
+                            <div class="progress-rings-container" id="rings-summary-container">
+                                <!-- Interactive custom progress rings will render here -->
+                            </div>
+                        </div>
+
+                        <!-- AI Smart Insights Card -->
+                        <div class="glass-card ai-insights-card">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <i data-lucide="sparkles" class="card-icon gold"></i>
+                                    <h2>Smart AI Insights</h2>
+                                </div>
+                                <button class="btn btn-secondary-icon" id="regenerate-insights-btn" title="Recalculate patterns">
+                                    <i data-lucide="refresh-cw"></i>
+                                </button>
+                            </div>
+                            <div class="ai-insight-content" id="insights-container">
+                                <div class="insight-loading">
+                                    <i data-lucide="loader-2" class="spin"></i>
+                                    <p>Analyzing behavioral history patterns...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Achievements & Badges Card -->
+                        <div class="glass-card badges-card">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <i data-lucide="medal" class="card-icon gold"></i>
+                                    <h2>Achievements</h2>
+                                </div>
+                            </div>
+                            <div class="badges-grid" id="badges-container">
+                                <!-- Badges injected via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Weekly Review Card -->
+                        <div class="glass-card weekly-review-card">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <i data-lucide="calendar-check" class="card-icon cyan"></i>
+                                    <h2>Weekly Review</h2>
+                                </div>
+                                <button class="btn btn-secondary-icon" id="btn-refresh-review" title="Regenerate review">
+                                    <i data-lucide="refresh-cw"></i>
+                                </button>
+                            </div>
+                            <div class="weekly-review-content" id="weekly-review-content">
+                                <div class="review-loading">
+                                    <p>Complete a few days of tracking to unlock your review.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab View: Analytics -->
+            <section id="tab-analytics" class="tab-panel">
+                <div class="analytics-grid">
+                    <!-- GitHub style heatmap calendar grid -->
+                    <div class="glass-card heatmap-card full-width">
+                        <div class="card-header">
+                            <div class="card-title-group">
+                                <i data-lucide="calendar" class="card-icon cyan"></i>
+                                <h2>Habit Heatmap (Last 4 Weeks)</h2>
+                            </div>
+                            <div class="heatmap-legend">
+                                <span>Less</span>
+                                <div class="legend-box level-0"></div>
+                                <div class="legend-box level-1"></div>
+                                <div class="legend-box level-2"></div>
+                                <div class="legend-box level-3"></div>
+                                <div class="legend-box level-4"></div>
+                                <span>More</span>
+                            </div>
+                        </div>
+                        <div class="heatmap-wrapper">
+                            <div id="heatmap-grid" class="heatmap-grid">
+                                <!-- Calendar days injected dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scatter correlation plots -->
+                    <div class="glass-card correlation-card">
+                        <div class="card-header">
+                            <div class="card-title-group">
+                                <i data-lucide="trending-up" class="card-icon purple"></i>
+                                <h2>Sleep vs. Productivity Correlation</h2>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-container">
+                            <canvas id="correlation-chart" width="400" height="250"></canvas>
+                        </div>
+                        <div class="chart-annotation" id="correlation-explanation">
+                            Plotting recorded nights of sleep against reported productivity scores.
+                        </div>
+                    </div>
+
+                    <!-- Sleep & Screen Time Trend -->
+                    <div class="glass-card trend-card">
+                        <div class="card-header">
+                            <div class="card-title-group">
+                                <i data-lucide="sliders" class="card-icon rose"></i>
+                                <h2>Wellness Balance Overview</h2>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-container">
+                            <canvas id="trend-chart" width="400" height="250"></canvas>
+                        </div>
+                        <div class="chart-annotation">
+                            Weekly trend comparing screen time against mood levels.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab View: Focus Room -->
+            <section id="tab-focus" class="tab-panel">
+                <div class="focus-grid">
+                    <!-- Left: Focus Timer Widget -->
+                    <div class="glass-card focus-timer-card">
+                        <div class="focus-timer-visual">
+                            <svg class="timer-svg" viewBox="0 0 100 100">
+                                <circle class="timer-track" cx="50" cy="50" r="45"></circle>
+                                <circle class="timer-progress" id="timer-progress-ring" cx="50" cy="50" r="45"></circle>
+                                
+                                <!-- Blooming Lotus SVG (Centered) -->
+                                <g id="focus-lotus" class="focus-lotus" style="transform: translate(50px, 50px) scale(0); transform-origin: center; transition: all 1s ease-out;">
+                                    <path d="M0,10 C-10,0 -10,-10 0,-20 C10,-10 10,0 0,10 Z" fill="rgba(192, 132, 252, 0.4)" stroke="#c084fc" stroke-width="0.5" />
+                                    <path d="M0,10 C-10,0 -10,-10 0,-20 C10,-10 10,0 0,10 Z" fill="rgba(45, 212, 191, 0.4)" stroke="#2dd4bf" stroke-width="0.5" transform="rotate(45)" />
+                                    <path d="M0,10 C-10,0 -10,-10 0,-20 C10,-10 10,0 0,10 Z" fill="rgba(192, 132, 252, 0.4)" stroke="#c084fc" stroke-width="0.5" transform="rotate(90)" />
+                                    <path d="M0,10 C-10,0 -10,-10 0,-20 C10,-10 10,0 0,10 Z" fill="rgba(45, 212, 191, 0.4)" stroke="#2dd4bf" stroke-width="0.5" transform="rotate(135)" />
+                                    <path d="M0,10 C-10,0 -10,-10 0,-20 C10,-10 10,0 0,10 Z" fill="rgba(192, 132, 252, 0.4)" stroke="#c084fc" stroke-width="0.5" transform="rotate(180)" />
+                                    <path d="M0,10 C-10,0 -10,-10 0,-20 C10,-10 10,0 0,10 Z" fill="rgba(45, 212, 191, 0.4)" stroke="#2dd4bf" stroke-width="0.5" transform="rotate(225)" />
+                                    <path d="M0,10 C-10,0 -10,-10 0,-20 C10,-10 10,0 0,10 Z" fill="rgba(192, 132, 252, 0.4)" stroke="#c084fc" stroke-width="0.5" transform="rotate(270)" />
+                                    <path d="M0,10 C-10,0 -10,-10 0,-20 C10,-10 10,0 0,10 Z" fill="rgba(45, 212, 191, 0.4)" stroke="#2dd4bf" stroke-width="0.5" transform="rotate(315)" />
+                                    <circle cx="0" cy="0" r="3" fill="#facc15" />
+                                </g>
+                            </svg>
+                            <div class="timer-text-content">
+                                <span class="timer-label" id="timer-label-status">FOCUS</span>
+                                <span class="timer-digits" id="timer-display">25:00</span>
+                            </div>
+                        </div>
+
+                        <div class="timer-controls">
+                            <button class="btn btn-secondary" id="timer-reset">Reset</button>
+                            <button class="btn btn-primary" id="timer-toggle">
+                                <i data-lucide="play" id="timer-play-icon"></i>
+                                <span id="timer-toggle-text">Start Focus</span>
+                            </button>
+                        </div>
+
+                        <div class="timer-presets">
+                            <button class="preset-btn active" data-time="1500">25m Pomodoro</button>
+                            <button class="preset-btn" data-time="300">5m Break</button>
+                            <button class="preset-btn" data-time="900">15m Break</button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Audio Synthesizer Controls -->
+                    <div class="glass-card synth-card">
+                        <div class="card-header">
+                            <div class="card-title-group">
+                                <i data-lucide="music" class="card-icon violet"></i>
+                                <h2>Ambient Synthesizer</h2>
+                            </div>
+                            <span class="card-badge pulse" id="synth-status">Synthesizer Offline</span>
+                        </div>
+                        <p class="synth-desc">Synthesize focus-enhancing soundtracks directly in your browser using the Web Audio API.</p>
+
+                        <div class="synth-track-selector">
+                            <div class="synth-track-option active" data-sound="binaural">
+                                <div class="track-icon"><i data-lucide="waves"></i></div>
+                                <div class="track-details">
+                                    <span class="track-name">Binaural Focus Drone</span>
+                                    <span class="track-type">Deep alpha brainwaves</span>
+                                </div>
+                                <button class="btn-track-play" id="btn-play-binaural"><i data-lucide="play"></i></button>
+                            </div>
+
+                            <div class="synth-track-option" data-sound="rain">
+                                <div class="track-icon"><i data-lucide="cloud-rain"></i></div>
+                                <div class="track-details">
+                                    <span class="track-name">Synthesized Rain</span>
+                                    <span class="track-type">Pink noise generator</span>
+                                </div>
+                                <button class="btn-track-play" id="btn-play-rain"><i data-lucide="play"></i></button>
+                            </div>
+
+                            <div class="synth-track-option" data-sound="ambient">
+                                <div class="track-icon"><i data-lucide="compass"></i></div>
+                                <div class="track-details">
+                                    <span class="track-name">Cosmic Cosmic Pads</span>
+                                    <span class="track-type">Low-frequency resonant filter</span>
+                                </div>
+                                <button class="btn-track-play" id="btn-play-ambient"><i data-lucide="play"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="synth-sliders">
+                            <div class="slider-group">
+                                <label for="synth-volume">Volume</label>
+                                <input type="range" id="synth-volume" min="0" max="1" step="0.05" value="0.5">
+                            </div>
+                            <div class="slider-group">
+                                <label for="synth-resonance">Modulation Frequency</label>
+                                <input type="range" id="synth-resonance" min="1" max="20" step="0.5" value="5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab View: Calendar -->
+            <section id="tab-calendar" class="tab-panel">
+                <div class="calendar-layout">
+                    <!-- Main Calendar Card -->
+                    <div class="glass-card calendar-card">
+                        <div class="card-header">
+                            <div class="card-title-group">
+                                <i data-lucide="calendar-days" class="card-icon cyan"></i>
+                                <h2>Habit Calendar</h2>
+                            </div>
+                            <div class="calendar-nav">
+                                <button id="prev-month" class="btn btn-secondary-icon cal-nav-btn" title="Previous month">
+                                    <i data-lucide="chevron-left"></i>
+                                </button>
+                                <span class="calendar-month-label" id="calendar-month-year">June 2026</span>
+                                <button id="next-month" class="btn btn-secondary-icon cal-nav-btn" title="Next month">
+                                    <i data-lucide="chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Weekday column headers -->
+                        <div class="calendar-weekdays">
+                            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                        </div>
+
+                        <!-- Calendar day grid (injected by JS) -->
+                        <div class="calendar-grid" id="calendar-grid"></div>
+
+                        <!-- Legend -->
+                        <div class="calendar-legend">
+                            <span class="legend-label">Completion:</span>
+                            <div class="legend-swatch cal-l0"></div><span>None</span>
+                            <div class="legend-swatch cal-l1"></div><span>Low</span>
+                            <div class="legend-swatch cal-l2"></div><span>Half</span>
+                            <div class="legend-swatch cal-l3"></div><span>Most</span>
+                            <div class="legend-swatch cal-l4"></div><span>Perfect</span>
+                        </div>
+                    </div>
+
+                    <!-- Day Detail Sidebar -->
+                    <div class="glass-card calendar-detail-card">
+                        <div class="card-header">
+                            <div class="card-title-group">
+                                <i data-lucide="clipboard-list" class="card-icon purple"></i>
+                                <h2>Day Details</h2>
+                            </div>
+                        </div>
+                        <div class="calendar-detail-content" id="calendar-detail">
+                            <div class="detail-placeholder">
+                                <i data-lucide="mouse-pointer-click"></i>
+                                <p>Click a day on the calendar to view completion details.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab View: Settings -->
+            <section id="tab-settings" class="tab-panel">
+                <div class="settings-grid">
+                    <div class="glass-card settings-card">
+                        <div class="card-header">
+                            <div class="card-title-group">
+                                <i data-lucide="database" class="card-icon cyan"></i>
+                                <h2>Data Management</h2>
+                            </div>
+                        </div>
+                        <p class="settings-desc">Your daily check-ins and metrics are stored safely in your browser's local storage.</p>
+
+                        <div class="settings-actions">
+                            <div class="settings-action-row">
+                                <div class="action-info">
+                                    <h3>Populate Demonstration Data</h3>
+                                    <p>Inject 14 days of realistic past tracker logs to test correlations and heatmap visualization instantly.</p>
+                                </div>
+                                <button id="btn-populate-demo" class="btn btn-secondary">Load Demo Data</button>
+                            </div>
+
+                            <div class="settings-action-row">
+                                <div class="action-info">
+                                    <h3>Backup Tracker Logs</h3>
+                                    <p>Export all tracker logs as a structured JSON file to your device.</p>
+                                </div>
+                                <button id="btn-export-data" class="btn btn-primary">Export JSON</button>
+                            </div>
+
+                            <div class="settings-action-row">
+                                <div class="action-info">
+                                    <h3>Restore Data</h3>
+                                    <p>Upload a previously exported JSON backup file to restore your tracker logs.</p>
+                                </div>
+                                <div class="file-upload-wrapper">
+                                    <button class="btn btn-secondary file-upload-btn">Import JSON</button>
+                                    <input type="file" id="input-import-data" accept=".json">
+                                </div>
+                            </div>
+
+                            <div class="settings-action-row danger-zone">
+                                <div class="action-info">
+                                    <h3>Reset All Logs</h3>
+                                    <p class="text-warning">Permanently delete all habits and history. This action is irreversible.</p>
+                                </div>
+                                <button id="btn-reset-data" class="btn btn-danger">Reset Local Logs</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Habit Templates Library -->
+                    <div class="glass-card templates-card">
+                        <div class="card-header">
+                            <div class="card-title-group">
+                                <i data-lucide="layout-template" class="card-icon purple"></i>
+                                <h2>Habit Templates</h2>
+                            </div>
+                            <span class="card-sub-label">One-click curated habit packs</span>
+                        </div>
+                        <div class="templates-grid" id="templates-grid">
+                            <!-- Template pack cards injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Interactive Notifications -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Core Scripts -->
+    <script src="audio.js?v=5"></script>
+    <script src="charts.js?v=5"></script>
+    <script src="app.js?v=5"></script>
+</body>
+</html>
