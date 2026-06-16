@@ -4,44 +4,43 @@
 
 :root {
     /* Base Color Tokens — Warm Neutral Palette */
-    --bg-primary: #f8f7f4;
-    --bg-secondary: #f0efe9;
-    --bg-sidebar: #e6e3da;
-    --card-bg: rgba(255, 255, 255, 0.85);
-    --card-border: rgba(139, 129, 109, 0.12);
+    --bg-primary: #faf8f5;
+    --bg-secondary: #f2f0eb;
+    --bg-sidebar: #e9e5dd;
+    --card-bg: rgba(255, 255, 255, 0.88);
+    --card-border: rgba(139, 129, 109, 0.1);
     
     /* Typography Colors — Warm Text */
-    --text-primary: #2d2819;
-    --text-secondary: #5d5445;
-    --text-muted: #8a8071;
+    --text-primary: #3a342a;
+    --text-secondary: #6b6251;
+    --text-muted: #958b7b;
     
-    /* Accent Palette — Earthy, Organic */
-    --accent-sage: #6b8e7e;
-    --accent-sage-rgb: 107, 142, 126;
-    --accent-terracotta: #c17a69;
-    --accent-terracotta-rgb: 193, 122, 105;
-    --accent-gold: #b89f7a;
-    --accent-gold-rgb: 184, 159, 122;
-    --accent-umber: #7d6a5b;
+    /* Accent Palette — Earthy, Soft Tones */
+    --accent-sage: #7a9a8a;
+    --accent-sage-rgb: 122, 154, 138;
+    --accent-clay: #b58a7a;
+    --accent-clay-rgb: 181, 138, 122;
+    --accent-umber: #8a7766;
+    --accent-umber-rgb: 138, 119, 102;
     
     /* Gradients — Soft, Natural */
-    --gradient-sage: linear-gradient(135deg, #8aa99b 0%, #6b8e7e 100%);
-    --gradient-warm: linear-gradient(135deg, #d4b29a 0%, #c17a69 100%);
-    --gradient-gold: linear-gradient(135deg, #d4b29a 0%, #b89f7a 100%);
+    --gradient-sage: linear-gradient(135deg, #9bb5a7 0%, #7a9a8a 100%);
+    --gradient-warm: linear-gradient(135deg, #c8a694 0%, #b58a7a 100%);
+    --gradient-gold: linear-gradient(135deg, #c8a694 0%, #b58a7a 100%);
     
     /* Typography */
     --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     
     /* Subtle Shadows */
-    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.04);
-    --shadow-raised: 0 4px 24px rgba(0, 0, 0, 0.06);
+    --shadow-soft: 0 1px 6px rgba(0, 0, 0, 0.03);
+    --shadow-raised: 0 2px 12px rgba(0, 0, 0, 0.04);
     
     /* Borders & Spacing */
     --radius-sm: 8px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --transition: all 0.2s ease;
 }
 
 /* Reset & Scaffold Base */
@@ -431,8 +430,56 @@ body {
 }
 
 .stat-trend.neutral i {
-    color: var(--accent-gold);
+    color: var(--accent-clay);
 }
+
+/* Progress Rings Container */
+.progress-rings-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 1rem;
+    min-height: 140px;
+}
+
+.radial-ring-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ring-visual {
+    position: relative;
+    width: 90px;
+    height: 90px;
+}
+
+.ring-visual svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}
+
+.ring-track {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.04);
+    stroke-width: 7;
+}
+
+/* Radial Rings - keep SVG but update colors */
+.ring-progress {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 251.2;
+    transition: stroke-dashoffset 0.8s ease;
+}
+
+.radial-ring-widget.sage .ring-progress { stroke: var(--accent-sage); }
+.radial-ring-widget.clay .ring-progress { stroke: var(--accent-clay); }
+.radial-ring-widget.umber .ring-progress { stroke: var(--accent-umber); }
 
 /* Tab Panels Visibility Control */
 .tab-panel {
@@ -616,20 +663,20 @@ body {
     gap: 0.25rem;
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--accent-rose);
+    color: var(--accent-clay);
 }
 
 .btn-delete-habit {
     background: transparent;
     border: none;
-    color: var(--text-dim);
+    color: var(--text-muted);
     cursor: pointer;
-    transition: var(--transition-smooth);
+    transition: var(--transition);
     padding: 2px;
 }
 
 .btn-delete-habit:hover {
-    color: var(--accent-rose);
+    color: var(--accent-clay);
 }
 
 /* Inline Habit Adding Panel */
@@ -640,14 +687,14 @@ body {
 
 .add-habit-inline input {
     flex-grow: 1;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-sm);
     padding: 0.75rem 1rem;
-    color: white;
+    color: var(--text-primary);
     outline: none;
     font-family: var(--font-body);
-    transition: var(--transition-smooth);
+    transition: var(--transition);
 }
 
 .add-habit-inline input:focus {
@@ -814,52 +861,19 @@ body {
     filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.4));
 }
 
-/* Custom Progress Rings UI */
-.progress-rings-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    gap: 1rem;
-    min-height: 140px;
-}
-
-.radial-ring-widget {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.ring-visual {
-    position: relative;
-    width: 90px;
-    height: 90px;
-}
-
-.ring-visual svg {
-    transform: rotate(-90deg);
-    width: 100%;
-    height: 100%;
-}
-
-.ring-track {
-    fill: none;
-    stroke: rgba(0, 0, 0, 0.04);
-    stroke-width: 7;
-}
-
+/* Radial Rings - keep SVG but update colors */
 .ring-progress {
     fill: none;
     stroke-width: 8;
     stroke-linecap: round;
     stroke-dasharray: 251.2;
     stroke-dashoffset: 251.2;
-    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: stroke-dashoffset 0.8s ease;
 }
 
-.radial-ring-widget.cyan .ring-progress { stroke: var(--accent-cyan); filter: drop-shadow(0 0 5px var(--accent-cyan)); }
-.radial-ring-widget.purple .ring-progress { stroke: var(--accent-purple); filter: drop-shadow(0 0 5px var(--accent-purple)); }
-.radial-ring-widget.rose .ring-progress { stroke: var(--accent-rose); filter: drop-shadow(0 0 5px var(--accent-rose)); }
+.radial-ring-widget.sage .ring-progress { stroke: var(--accent-sage); }
+.radial-ring-widget.clay .ring-progress { stroke: var(--accent-clay); }
+.radial-ring-widget.umber .ring-progress { stroke: var(--accent-umber); }
 
 .ring-text-inner {
     position: absolute;
@@ -1041,51 +1055,7 @@ body {
 .legend-box.level-3 { background: rgba(8, 145, 178, 0.6); }
 .legend-box.level-4 { background: rgba(8, 145, 178, 0.85); }
 
-/* Focus Room Grid */
-.focus-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-}
-
-/* Focus Timer Widget styling */
-.focus-timer-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-    padding: 3rem;
-}
-
-.focus-lotus {
-    transition: transform 0.8s ease-out, opacity 0.8s ease-out;
-    transform-origin: center;
-    opacity: 0;
-}
-
-/* Level header flash on level up */
-.level-header.level-up-toast {
-    animation: levelUpPulse 1s ease-out;
-}
-
-@keyframes levelUpPulse {
-    0% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.6); }
-    50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.9); }
-    100% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.6); }
-}
-
-.focus-timer-visual {
-    position: relative;
-    width: 220px;
-    height: 220px;
-}
-
-.timer-svg {
-    width: 100%;
-    height: 100%;
-}
-
+/* Timer */
 .timer-track {
     fill: none;
     stroke: rgba(0, 0, 0, 0.04);
@@ -1094,15 +1064,14 @@ body {
 
 .timer-progress {
     fill: none;
-    stroke: var(--accent-cyan);
+    stroke: var(--accent-sage);
     stroke-width: 5;
     stroke-linecap: round;
-    stroke-dasharray: 282.7; /* 2 * PI * r (r=45) => 282.7 */
+    stroke-dasharray: 282.7;
     stroke-dashoffset: 0;
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
-    transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
-    filter: drop-shadow(0 0 6px var(--accent-cyan));
+    transition: stroke-dashoffset 0.1s linear, stroke 0.2s ease;
 }
 
 .timer-text-content {
@@ -1192,25 +1161,25 @@ body {
 }
 
 .synth-track-option.active {
-    border-color: rgba(139, 92, 246, 0.3);
-    background: rgba(139, 92, 246, 0.04);
+    border-color: rgba(181, 138, 122, 0.3);
+    background: rgba(181, 138, 122, 0.06);
 }
 
 .track-icon {
     width: 38px;
     height: 38px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.03);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-muted);
-    transition: var(--transition-smooth);
+    color: var(--text-secondary);
+    transition: var(--transition);
 }
 
 .synth-track-option.active .track-icon {
-    background: rgba(139, 92, 246, 0.15);
-    color: #a78bfa;
+    background: rgba(181, 138, 122, 0.12);
+    color: var(--accent-clay);
 }
 
 .track-details {
@@ -1223,11 +1192,12 @@ body {
 .track-name {
     font-size: 0.92rem;
     font-weight: 600;
+    color: var(--text-primary);
 }
 
 .track-type {
     font-size: 0.72rem;
-    color: var(--text-muted);
+    color: var(--text-secondary);
 }
 
 .btn-track-play {
@@ -1499,9 +1469,9 @@ body {
     backdrop-filter: blur(8px);
 }
 
-.notification-toast.success { border-left-color: var(--accent-cyan); }
-.notification-toast.error { border-left-color: var(--accent-rose); }
-.notification-toast.info { border-left-color: var(--accent-purple); }
+.notification-toast.success { border-left-color: var(--accent-sage); }
+.notification-toast.error { border-left-color: var(--accent-clay); }
+.notification-toast.info { border-left-color: var(--accent-umber); }
 
 @keyframes slideIn {
     from { opacity: 0; transform: translateY(20px) scale(0.9); }

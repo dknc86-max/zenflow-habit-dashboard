@@ -27,8 +27,8 @@ class ZenCharts {
                 datasets: [{
                     label: 'Sleep vs Productivity',
                     data: data,
-                    backgroundColor: 'rgba(8, 145, 178, 0.6)',
-                    borderColor: '#0891b2',
+                    backgroundColor: 'rgba(122, 154, 138, 0.7)',
+                    borderColor: '#7a9a8a',
                     pointRadius: 6,
                     pointHoverRadius: 8
                 }]
@@ -122,8 +122,8 @@ class ZenCharts {
                         type: 'bar',
                         label: 'Screen Time',
                         data: screenData,
-                        backgroundColor: 'rgba(244, 63, 94, 0.4)',
-                        borderColor: '#f43f5e',
+                        backgroundColor: 'rgba(181, 138, 122, 0.4)',
+                        borderColor: '#b58a7a',
                         yAxisID: 'y-screen',
                         borderRadius: 4
                     },
@@ -131,8 +131,8 @@ class ZenCharts {
                         type: 'line',
                         label: 'Mood',
                         data: moodData,
-                        borderColor: '#a855f7',
-                        backgroundColor: '#a855f7',
+                        borderColor: '#7a9a8a',
+                        backgroundColor: '#7a9a8a',
                         yAxisID: 'y-mood',
                         pointRadius: 5,
                         pointHoverRadius: 7,
@@ -222,7 +222,7 @@ class ZenCharts {
             return;
         }
 
-        const ringThemes = ['cyan', 'purple', 'rose'];
+        const ringThemes = ['sage', 'clay', 'umber'];
 
         const last7Days = [];
         for (let i = 0; i < 7; i++) {
