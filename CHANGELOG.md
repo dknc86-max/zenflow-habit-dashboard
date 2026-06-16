@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.0] - 2026-06-15
+
+### Changed
+- **Visual redesign**: Replaced "glassmorphism" aesthetic with warm, organic palette
+  - Colors: Earthy sage greens, terracotta, warm golds instead of neon cyans/purples
+  - Fonts: Inter throughout (removed Outfit display font)
+  - Cards: Subtle paper-like backgrounds with soft borders, removed gradient overlays and blur effects
+  - Simplified shadows and transitions
+- **Chart.js integration**: Replaced custom Canvas 2D rendering with Chart.js for scatter and trend charts
+  - Better responsive behavior and tooltips out of the box
+  - Cleaner, more standard chart appearance
+
+### Fixed
+- Streak calculation timezone bugs
+- Timer reset state management  
+- Toast notification limit to prevent DOM leak
+
 ## [1.1.0] - 2026-06-15
 
 ### Fixed
