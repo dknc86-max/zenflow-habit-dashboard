@@ -41,6 +41,30 @@
     --radius-md: 14px;
     --radius-lg: 20px;
     --transition: all 0.2s ease;
+    --transition-slow: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Keyframe Animations */
+@keyframes checkPop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+@keyframes ringGrow {
+    0% { stroke-dashoffset: 251.2; }
+    100% { stroke-dashoffset: var(--final-offset, 0); }
+}
+
+@keyframes toastSlide {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes dayPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
 }
 
 /* Reset & Scaffold Base */
@@ -480,6 +504,11 @@ body {
 .radial-ring-widget.sage .ring-progress { stroke: var(--accent-sage); }
 .radial-ring-widget.clay .ring-progress { stroke: var(--accent-clay); }
 .radial-ring-widget.umber .ring-progress { stroke: var(--accent-umber); }
+
+/* Habit Check Animation */
+.habit-item.completed .habit-check-control i {
+    animation: checkPop 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
 
 /* Tab Panels Visibility Control */
 .tab-panel {
@@ -1371,30 +1400,31 @@ body {
 
 .btn-primary-icon:hover {
     transform: translateY(-1px);
-    box-shadow: 0 0 25px rgba(8, 145, 178, 0.45);
+    box-shadow: 0 2px 12px rgba(122, 154, 138, 0.25);
 }
 
 .btn-secondary {
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--card-bg);
     border-color: var(--card-border);
-    color: white;
+    color: var(--text-primary);
 }
 
 .btn-secondary:hover {
-    background: rgba(0, 0, 0, 0.08);
+    background: var(--card-bg);
+    border-color: var(--accent-sage);
 }
 
 .btn-secondary-icon {
     background: transparent;
     border: none;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: var(--transition-smooth);
+    transition: var(--transition);
     padding: 4px;
 }
 
 .btn-secondary-icon:hover {
-    color: white;
+    color: var(--accent-sage);
     transform: rotate(45deg);
 }
 
@@ -1436,12 +1466,6 @@ body {
     to { transform: rotate(360deg); }
 }
 
-@keyframes textPulse {
-    0% { opacity: 0.8; }
-    50% { opacity: 0.4; }
-    100% { opacity: 0.8; }
-}
-
 /* Dynamic Interactive Alerts */
 .notification-container {
     position: fixed;
@@ -1454,19 +1478,17 @@ body {
 }
 
 .notification-toast {
-    background: rgba(15, 17, 26, 0.9);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-left: 4px solid var(--accent-cyan);
+    border-left: 4px solid var(--accent-sage);
     border-radius: var(--radius-sm);
     padding: 0.85rem 1.25rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: white;
+    color: var(--text-primary);
     font-size: 0.88rem;
-    box-shadow: var(--shadow-glow);
-    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    backdrop-filter: blur(8px);
+    animation: toastSlide 0.3s ease-out forwards;
 }
 
 .notification-toast.success { border-left-color: var(--accent-sage); }
@@ -1697,7 +1719,7 @@ body {
 .schedule-label {
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--text-dim);
+    color: var(--text-muted);
     white-space: nowrap;
 }
 
@@ -1710,13 +1732,37 @@ body {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: rgba(0, 0, 0, 0.03);
-    color: var(--text-muted);
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--text-secondary);
     font-size: 0.68rem;
     font-weight: 700;
     cursor: pointer;
-    transition: var(--transition-smooth);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.day-pill:hover {
+    border-color: var(--accent-sage);
+    color: var(--accent-sage);
+}
+
+.day-pill.active {
+    background: var(--gradient-sage);
+    border-color: var(--accent-sage);
+    color: white;
+}
+
+/* Calendar day animations */
+.calendar-cell {
+    transition: var(--transition), transform 0.2s;
+}
+
+.calendar-cell.level-1, .calendar-cell.level-2 {
+    animation: dayPulse 3s ease-in-out infinite;
+}
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1746,7 +1792,7 @@ body {
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: var(--accent-cyan);
+    background: var(--accent-sage);
     opacity: 0.5;
 }
 
@@ -1761,7 +1807,7 @@ body {
 
 .habit-item.off-schedule .habit-name {
     text-decoration: line-through;
-    text-decoration-color: var(--text-dim);
+    text-decoration-color: var(--text-muted);
 }
 
 /* =====================================================
