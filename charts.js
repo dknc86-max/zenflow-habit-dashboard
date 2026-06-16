@@ -56,7 +56,7 @@ class ZenCharts {
         
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         
         const width = rect.width;
         const height = rect.height;
@@ -73,7 +73,7 @@ class ZenCharts {
         // Clean
         ctx.clearRect(0, 0, width, height);
         
-        // Draw Grid Lines (Sleep: 0 to 12 hrs, Productivity: 1 to 5 stars)
+        // Draw Grid Lines (Sleep: 4 to 12 hrs, Productivity: 1 to 5 stars)
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.06)';
         ctx.lineWidth = 1;
         ctx.fillStyle = '#6b7280'; // Text-dim
@@ -211,7 +211,7 @@ class ZenCharts {
         
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         
         const width = rect.width;
         const height = rect.height;
@@ -501,7 +501,7 @@ class ZenCharts {
     }
 
     formatDateString(dateStr) {
-        const d = new Date(dateStr);
+        const d = new Date(dateStr + 'T12:00:00');
         return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
     }
 }

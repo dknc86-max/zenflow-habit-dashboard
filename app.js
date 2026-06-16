@@ -151,6 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('notification-container');
         if (!container) return;
 
+        const MAX_TOASTS = 5;
+        const existing = container.querySelectorAll('.notification-toast');
+        if (existing.length >= MAX_TOASTS) {
+            existing[0].remove();
+        }
+
         const toast = document.createElement('div');
         toast.className = `notification-toast ${type}`;
         
@@ -166,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
         container.appendChild(toast);
         lucide.createIcons();
 
-        // Self-dismissing
         setTimeout(() => {
             toast.style.opacity = '0';
             toast.style.transform = 'translateY(15px) scale(0.95)';
@@ -257,7 +262,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Habits Operations
     // ---------------------------------------------------------
     const getTodayDateString = () => {
-        return new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
     };
 
     const getOrCreateTodayLog = () => {
@@ -567,70 +576,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const calculateHabitStreak = (habitId) => {
         const habit = state.habits.find(h => h.id === habitId);
         if (!habit) return 0;
-        
-        const todayStr = getTodayDateString();
-        let checkDate = new Date(todayStr);
-        let streak = 0;
-        
+
         const formatDate = (d) => {
             const yyyy = d.getFullYear();
             const mm = String(d.getMonth() + 1).padStart(2, '0');
             const dd = String(d.getDate()).padStart(2, '0');
             return `${yyyy}-${mm}-${dd}`;
         };
-        
-        // Check if habit completed or day is frozen
-        const isCompletedOrFrozen = (dateStr) => {
+
+        const isDayCompleted = (dateStr) => {
             const log = state.logs.find(l => l.date === dateStr);
-            const completed = log && log.completedHabits && log.completedHabits.includes(habitId);
-            const frozen = state.usedFreezes && state.usedFreezes.includes(dateStr);
-            return completed || frozen;
+            return log && log.completedHabits && log.completedHabits.includes(habitId);
         };
 
-        // Determine if streak is active
-        let todayStrFormatted = formatDate(checkDate);
-        let yesterday = new Date(checkDate);
+        const isFrozen = (dateStr) => state.usedFreezes && state.usedFreezes.includes(dateStr);
+
+        const today = new Date();
+        const todayStr = formatDate(today);
+        const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
-        let yesterdayStr = formatDate(yesterday);
-        
-        const completedToday = isCompletedOrFrozen(todayStrFormatted);
-        const completedYesterday = isCompletedOrFrozen(yesterdayStr);
-        
-        if (!completedToday && !completedYesterday) {
-            return 0; // Streak is dead
-        }
-        
-        let currentDate = new Date(checkDate);
-        while (true) {
-            let curStr = formatDate(currentDate);
-            let log = state.logs.find(l => l.date === curStr);
-            let completed = log && log.completedHabits && log.completedHabits.includes(habitId);
-            let frozen = state.usedFreezes && state.usedFreezes.includes(curStr);
-            
-            // Skip today if it hasn't been completed yet (since it's still ongoing)
-            if (curStr === todayStr && !completed && !frozen) {
-                currentDate.setDate(currentDate.getDate() - 1);
-                continue;
-            }
-            
-            if (completed || frozen) {
+        const yesterdayStr = formatDate(yesterday);
+
+        const doneToday = isDayCompleted(todayStr) || isFrozen(todayStr);
+        const doneYesterday = isDayCompleted(yesterdayStr) || isFrozen(yesterdayStr);
+
+        if (!doneToday && !doneYesterday) return 0;
+
+        let streak = 0;
+        let cursor = new Date(today);
+        const hasSchedule = habit.schedule && habit.schedule.length > 0;
+
+        for (let i = 0; i < 365; i++) {
+            const curStr = formatDate(cursor);
+            const dayOfWeek = cursor.getDay();
+            const completed = isDayCompleted(curStr) || isFrozen(curStr);
+
+            if (completed) {
                 streak++;
-                currentDate.setDate(currentDate.getDate() - 1);
+            } else if (curStr === todayStr) {
+                cursor.setDate(cursor.getDate() - 1);
+                continue;
+            } else if (hasSchedule && !habit.schedule.includes(dayOfWeek)) {
+                cursor.setDate(cursor.getDate() - 1);
+                continue;
             } else {
-                // If it has a schedule and this day is off-schedule, it doesn't break the streak!
-                if (habit.schedule && habit.schedule.length > 0) {
-                    const dayOfWeek = currentDate.getDay();
-                    if (!habit.schedule.includes(dayOfWeek)) {
-                        currentDate.setDate(currentDate.getDate() - 1);
-                        continue;
-                    }
-                }
-                break; // scheduled day missed, streak ends
+                break;
             }
-            
-            if (streak > 1000) break; // Infinite loop protection
+
+            cursor.setDate(cursor.getDate() - 1);
         }
-        
+
         return streak;
     };
 
@@ -756,55 +751,59 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetTimer = () => {
         clearInterval(timerInterval);
         timerIsRunning = false;
-        timerSecondsLeft = timerTotalDuration;
+        timerType = 'FOCUS';
+        timerTotalDuration = 1500;
+        timerSecondsLeft = 1500;
+        if (timerToggleText) timerToggleText.textContent = 'Start Focus';
+        if (timerPlayIcon) {
+            timerPlayIcon.setAttribute('data-lucide', 'play');
+            lucide.createIcons();
+        }
+        if (timerStatusLabel) timerStatusLabel.textContent = 'FOCUS';
+        if (progressRing) progressRing.style.stroke = 'var(--accent-cyan)';
+        updateTimerDisplay();
+        showToast('Timer reset', 'info');
+    };
+
+    const handleTimerCompletion = () => {
+        if (window.ZenSynth) window.ZenSynth.stop();
+        resetTrackVisualStates();
+
+        if (timerType === 'FOCUS') {
+            showToast('Excellent focus session complete! Take a break.', 'success');
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("ZenFlow", { body: "Focus session complete! Take a break." });
+            }
+            addExp(25);
+            if (!state.unlockedBadges.includes('deep_dive')) {
+                state.unlockedBadges.push('deep_dive');
+                saveState();
+            }
+            timerType = 'BREAK';
+            timerTotalDuration = 300;
+            timerSecondsLeft = 300;
+            if (timerStatusLabel) timerStatusLabel.textContent = 'BREAK';
+            if (progressRing) progressRing.style.stroke = 'var(--accent-purple)';
+        } else {
+            showToast('Break session complete. Ready to focus?', 'info');
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("ZenFlow", { body: "Break complete. Ready to focus?" });
+            }
+            timerType = 'FOCUS';
+            timerTotalDuration = 1500;
+            timerSecondsLeft = 1500;
+            if (timerStatusLabel) timerStatusLabel.textContent = 'FOCUS';
+            if (progressRing) progressRing.style.stroke = 'var(--accent-cyan)';
+        }
+
+        clearInterval(timerInterval);
+        timerIsRunning = false;
         if (timerToggleText) timerToggleText.textContent = 'Start Focus';
         if (timerPlayIcon) {
             timerPlayIcon.setAttribute('data-lucide', 'play');
             lucide.createIcons();
         }
         updateTimerDisplay();
-        showToast('Timer reset', 'info');
-    };
-
-    const handleTimerCompletion = () => {
-        if (timerType === 'FOCUS') {
-            showToast('Excellent focus session complete! Take a break.', 'success');
-            
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("ZenFlow", { body: "Focus session complete! Take a break." });
-            }
-            
-            // Gamification: Give EXP for focus
-            addExp(25);
-            if (!state.unlockedBadges.includes('deep_dive')) {
-                state.unlockedBadges.push('deep_dive');
-                saveState();
-            }
-
-            timerType = 'BREAK';
-            timerTotalDuration = 300; // 5 min break
-            timerSecondsLeft = 300;
-            if (timerStatusLabel) timerStatusLabel.textContent = 'BREAK';
-            if (progressRing) progressRing.style.stroke = 'var(--accent-purple)';
-        } else {
-            showToast('Break session complete. Ready to focus?', 'info');
-            
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("ZenFlow", { body: "Break complete. Ready to focus?" });
-            }
-
-            timerType = 'FOCUS';
-            timerTotalDuration = 1500; // 25 min default
-            timerSecondsLeft = 1500;
-            if (timerStatusLabel) timerStatusLabel.textContent = 'FOCUS';
-            if (progressRing) progressRing.style.stroke = 'var(--accent-cyan)';
-        }
-        
-        // Stop synthesized audio upon countdown end to protect ears
-        if (window.ZenSynth) window.ZenSynth.stop();
-        resetTrackVisualStates();
-        
-        resetTimer();
     };
 
     // Presets configuration
@@ -1055,7 +1054,10 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 13; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
-                const dateStr = d.toISOString().split('T')[0];
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                const dateStr = `${yyyy}-${mm}-${dd}`;
 
                 // Generate realistic values
                 // Sleep: range 6.0 to 9.0 hrs
@@ -1215,7 +1217,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = getTodayDateString();
         const totalHabits = state.habits.length || 1;
 
         // Empty cells for days before month starts

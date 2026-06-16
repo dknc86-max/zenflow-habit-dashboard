@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ZenFlow - Habit & Productivity Analytics Dashboard. Track habits, wellness metrics, and achieve peak focus.">
+    <meta name="theme-color" content="#0891b2">
+    <meta property="og:title" content="ZenFlow - Habit Dashboard">
+    <meta property="og:description" content="Track habits, wellness metrics, and achieve peak focus with ambient sound synthesis.">
     <title>ZenFlow // Habit & Productivity Analytics</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,24 +31,24 @@
                 </div>
             </div>
 
-            <nav class="nav-menu">
-                <button class="nav-item active" data-tab="overview">
+            <nav class="nav-menu" role="tablist" aria-label="Main navigation">
+                <button id="nav-overview" role="tab" aria-selected="true" aria-controls="tab-overview" class="nav-item active" data-tab="overview">
                     <i data-lucide="layout-dashboard"></i>
                     <span>Overview</span>
                 </button>
-                <button class="nav-item" data-tab="analytics">
+                <button id="nav-analytics" role="tab" aria-selected="false" aria-controls="tab-analytics" class="nav-item" data-tab="analytics">
                     <i data-lucide="bar-chart-3"></i>
                     <span>Analytics</span>
                 </button>
-                <button class="nav-item" data-tab="focus">
+                <button id="nav-focus" role="tab" aria-selected="false" aria-controls="tab-focus" class="nav-item" data-tab="focus">
                     <i data-lucide="timer"></i>
                     <span>Focus Room</span>
                 </button>
-                <button class="nav-item" data-tab="calendar">
+                <button id="nav-calendar" role="tab" aria-selected="false" aria-controls="tab-calendar" class="nav-item" data-tab="calendar">
                     <i data-lucide="calendar"></i>
                     <span>Calendar</span>
                 </button>
-                <button class="nav-item" data-tab="settings">
+                <button id="nav-settings" role="tab" aria-selected="false" aria-controls="tab-settings" class="nav-item" data-tab="settings">
                     <i data-lucide="settings"></i>
                     <span>Data & Settings</span>
                 </button>
@@ -84,7 +88,7 @@
         </aside>
 
         <!-- Main Content Area -->
-        <main class="main-content">
+        <main class="main-content" id="main-content">
             <!-- Header -->
             <header class="content-header">
                 <div class="header-greeting">
@@ -110,7 +114,7 @@
             </header>
 
             <!-- Tab View: Overview -->
-            <section id="tab-overview" class="tab-panel active">
+            <section id="tab-overview" class="tab-panel active" role="tabpanel" aria-labelledby="nav-overview">
                 <div class="dashboard-grid">
                     <!-- Left: Habits Checklist & Quick Logger -->
                     <div class="grid-col-left">
@@ -135,13 +139,13 @@
                             <div class="schedule-picker" id="schedule-picker">
                                 <span class="schedule-label">Schedule (optional):</span>
                                 <div class="day-pills">
-                                    <button type="button" class="day-pill" data-day="0">S</button>
-                                    <button type="button" class="day-pill" data-day="1">M</button>
-                                    <button type="button" class="day-pill" data-day="2">T</button>
-                                    <button type="button" class="day-pill" data-day="3">W</button>
-                                    <button type="button" class="day-pill" data-day="4">T</button>
-                                    <button type="button" class="day-pill" data-day="5">F</button>
-                                    <button type="button" class="day-pill" data-day="6">S</button>
+                                    <button type="button" class="day-pill" data-day="0" aria-label="Sunday">S</button>
+                                    <button type="button" class="day-pill" data-day="1" aria-label="Monday">M</button>
+                                    <button type="button" class="day-pill" data-day="2" aria-label="Tuesday">T</button>
+                                    <button type="button" class="day-pill" data-day="3" aria-label="Wednesday">W</button>
+                                    <button type="button" class="day-pill" data-day="4" aria-label="Thursday">Th</button>
+                                    <button type="button" class="day-pill" data-day="5" aria-label="Friday">F</button>
+                                    <button type="button" class="day-pill" data-day="6" aria-label="Saturday">S</button>
                                 </div>
                             </div>
                         </div>
@@ -322,7 +326,7 @@
             </section>
 
             <!-- Tab View: Analytics -->
-            <section id="tab-analytics" class="tab-panel">
+            <section id="tab-analytics" class="tab-panel" role="tabpanel" aria-labelledby="nav-analytics">
                 <div class="analytics-grid">
                     <!-- GitHub style heatmap calendar grid -->
                     <div class="glass-card heatmap-card full-width">
@@ -357,7 +361,7 @@
                             </div>
                         </div>
                         <div class="chart-canvas-container">
-                            <canvas id="correlation-chart" width="400" height="250"></canvas>
+                            <canvas id="correlation-chart" width="400" height="250" aria-label="Sleep vs Productivity scatter plot"></canvas>
                         </div>
                         <div class="chart-annotation" id="correlation-explanation">
                             Plotting recorded nights of sleep against reported productivity scores.
@@ -373,7 +377,7 @@
                             </div>
                         </div>
                         <div class="chart-canvas-container">
-                            <canvas id="trend-chart" width="400" height="250"></canvas>
+                            <canvas id="trend-chart" width="400" height="250" aria-label="Wellness trend chart"></canvas>
                         </div>
                         <div class="chart-annotation">
                             Weekly trend comparing screen time against mood levels.
@@ -383,7 +387,7 @@
             </section>
 
             <!-- Tab View: Focus Room -->
-            <section id="tab-focus" class="tab-panel">
+            <section id="tab-focus" class="tab-panel" role="tabpanel" aria-labelledby="nav-focus">
                 <div class="focus-grid">
                     <!-- Left: Focus Timer Widget -->
                     <div class="glass-card focus-timer-card">
@@ -481,7 +485,7 @@
             </section>
 
             <!-- Tab View: Calendar -->
-            <section id="tab-calendar" class="tab-panel">
+            <section id="tab-calendar" class="tab-panel" role="tabpanel" aria-labelledby="nav-calendar">
                 <div class="calendar-layout">
                     <!-- Main Calendar Card -->
                     <div class="glass-card calendar-card">
@@ -539,7 +543,7 @@
             </section>
 
             <!-- Tab View: Settings -->
-            <section id="tab-settings" class="tab-panel">
+            <section id="tab-settings" class="tab-panel" role="tabpanel" aria-labelledby="nav-settings">
                 <div class="settings-grid">
                     <div class="glass-card settings-card">
                         <div class="card-header">
@@ -607,7 +611,7 @@
     </div>
 
     <!-- Interactive Notifications -->
-    <div id="notification-container" class="notification-container"></div>
+    <div id="notification-container" class="notification-container" aria-live="polite" role="status"></div>
 
     <!-- Core Scripts -->
     <script src="audio.js?v=5"></script>
